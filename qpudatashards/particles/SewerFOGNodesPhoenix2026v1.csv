@@ -1,0 +1,6 @@
+node_id,asset_type,city,region,parameter,cin_mgL,cout_mgL,avg_flow_Lmin,operation_seconds_per_day,ecoimpact_score,karma_per_kg_fog_avoided,notes
+PHX-FOG-REACH-01,ManholeNode,Phoenix,AZ,FOG,250,80,120,86400,0.86,0.75,"Design profile for downtown restaurant corridor reach; values to be replaced by measured Cin/Cout once sensors are deployed."
+PHX-FOG-REACH-02,ManholeNode,Phoenix,AZ,FOG,220,70,90,86400,0.84,0.75,"Mixed residential/commercial basin; targeted FOG outreach expected to lower Cin by 20–30 mg/L over first year."
+PHX-FOG-REACH-03,ManholeNode,Phoenix,AZ,FOG,300,100,150,86400,0.88,0.75,"High-FOG industrial kitchen cluster; priority for under-sink FOG reduction devices and enforcement inspections."
+PHX-FOG-REACH-04,ManholeNode,Phoenix,AZ,FOG,200,60,75,86400,0.83,0.75,"Primarily residential with a few small food service establishments; monitoring to verify low FOG load and protect capacity."
+PHX-FOG-REACH-05,ManholeNode,Phoenix,AZ,FOG,270,90,130,86400,0.87,0.75,"Upstream of known blockage history; FOG mass load reduction will be compared to historic SSO records for eco-impact validation."
