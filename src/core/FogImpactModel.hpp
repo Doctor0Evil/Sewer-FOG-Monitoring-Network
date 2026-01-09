@@ -1,30 +1,50 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include <stdexcept>
 
-namespace sewerfog {
+namespace fog {
 
 struct FogNodeState {
-    double cin_mg_per_L;   // inlet FOG concentration [mg/L]
-    double cout_mg_per_L;  // outlet FOG concentration [mg/L]
-    double flow_m3_per_s;  // volumetric flow rate [m^3/s]
-    double dt_seconds;     // integration period [s]
+    double Cin_mgL;   // upstream FOG, mg/L
+    double Cout_mgL;  // downstream FOG, mg/L
+    double Q_m3s;     // flow, m^3/s
+    double dt_s;      // integration window, s
 };
 
 struct FogImpactConfig {
-    double cref_mg_per_L;     // reference concentration (e.g. local limit) [mg/L]
-    double hazardWeight;      // dimensionless hazard weight w_FOG
-    double karmaPerKg;        // Karma units per kg FOG avoided
+    double Cref_mgL;      // reference limit, e.g. 100 mg/L
+    double hazardWeight;  // w_FOG, dimensionless
+    double karmaPerKg;    // Karma per kg FOG avoided
 };
 
 struct FogImpactResult {
-    double mFOG_kg;           // avoided FOG mass [kg] over dt
-    double normalizedRisk;    // (Cin - Cout)/Cref (dimensionless)
-    double karma;             // Karma units for the node over dt
+    double massAvoided_kg;
+    double nodeImpact_K;
 };
 
-FogImpactResult computeFogImpact(const FogNodeState &state,
-                                 const FogImpactConfig &cfg);
+inline FogImpactResult computeFogImpact(const FogNodeState& s,
+                                        const FogImpactConfig& cfg) {
+    if (cfg.Cref_mgL <= 0.0) {
+        throw std::invalid_argument("Cref_mgL must be positive.");
+    }
+    if (s.dt_s <= 0.0 || s.Q_m3s <= 0.0) {
+    return {0.0, 0.0};
+    }
+    const double deltaC_mgL = s.Cin_mgL - s.Cout_mgL;
+    if (deltaC_mgL <= 0.0) {
+        return {0.0, 0.0};
+    }
+    const double Cin_kgm3  = s.Cin_mgL  * 1.0e-6;
+    const double Cout_kgm3 = s.Cout_mgL * 1.0e-6;
+    const double deltaC_kgm3 = Cin_kgm3 - Cout_kgm3;
 
-} // namespace sewerfog
+    const double mass_kg = deltaC_kgm3 * s.Q_m3s * s.dt_s;
+
+    const double riskUnit = deltaC_mgL / cfg.Cref_mgL;
+
+    const double K = cfg.hazardWeight * riskUnit * mass_kg * cfg.karmaPerKg;
+
+    return {mass_kg, K};
+}
+
+} // namespace fog
